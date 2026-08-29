@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JobFinder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/app.css" />
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="mark">JF</span>
+        <div>
+          <h1>JobFinder</h1>
+          <p>CV in. LinkedIn roles out. Honest interview odds.</p>
+        </div>
+      </div>
+      <nav class="site-nav" aria-label="Pages">
+        <a class="nav-link is-active" href="/">Search</a>
+        <a class="nav-link" href="/applied">Applied <span class="nav-count" id="nav-applied-count"></span></a>
+      </nav>
+      <div class="top-actions">
+        <label class="btn primary" id="upload-btn">
+          <span class="spinner" aria-hidden="true"></span>
+          <span id="upload-label">Upload CV</span>
+          <input id="cv-file" type="file" accept="application/pdf" hidden />
+        </label>
+        <a class="btn ghost" href="/docs" target="_blank" rel="noreferrer">API</a>
+      </div>
+    </header>
+
+    <section class="stats" id="stats">
+      <article><span id="stat-jobs">0</span><small>Roles saved</small></article>
+      <a class="stat-link" href="/applied">
+        <article><span id="stat-applied">0</span><small>Applied</small></article>
+      </a>
+      <article><span id="stat-success">0%</span><small>Avg interview odds</small></article>
+      <article><span id="stat-remote">0</span><small>Remote</small></article>
+      <article><span id="stat-sponsor">0</span><small>Visa roles</small></article>
+      <article><span id="stat-salary">0</span><small>With salary</small></article>
+    </section>
+
+    <main class="layout">
+      <aside class="panel cv-panel">
+        <h2>Your CV</h2>
+        <div id="cv-empty" class="empty">
+          Drop a PDF resume. We read skills, titles, and years, then search LinkedIn for you.
+        </div>
+        <div id="cv-card" class="cv-card hidden">
+          <p class="eyebrow" id="cv-file-name"></p>
+          <h3 id="cv-name">—</h3>
+          <p class="muted" id="cv-headline">—</p>
+          <dl>
+            <div><dt>Location</dt><dd id="cv-location">—</dd></div>
+            <div><dt>Experience</dt><dd id="cv-years">—</dd></div>
+            <div><dt>Email</dt><dd id="cv-email">—</dd></div>
+          </dl>
+          <p class="label">Skills</p>
+          <div class="chips" id="cv-skills"></div>
+        </div>
+      </aside>
+
+      <section class="panel jobs-panel">
+        <form id="search-form" class="search-form">
+          <div class="fields">
+            <label class="tag-field">Keywords
+              <div class="tag-box" id="keyword-box">
+                <div id="keyword-tags" class="tag-list"></div>
+                <input id="keyword-input" autocomplete="off" placeholder="Type a skill, press Enter" />
+              </div>
+              <span class="field-hint">Enter or comma adds a tag. Fewer tags match more jobs.</span>
+            </label>
+            <div class="place-fields">
+              <label>Country
+                <input id="country" list="country-list" placeholder="Germany" autocomplete="country-name" />
+              </label>
+              <label>City <span class="optional">optional</span>
+                <input id="city" placeholder="Berlin" />
+              </label>
+            </div>
+            <p class="field-hint">Leave city empty to search the whole country. Results are from the last 30 days.</p>
+          </div>
+          <div id="keyword-suggest" class="suggest"></div>
+          <div class="toggles">
+            <label class="check"><input type="checkbox" id="remote-only" /> Remote only</label>
+            <label class="check"><input type="checkbox" id="sponsor-only" /> Visa sponsorship</label>
+            <button class="btn primary" type="submit" id="search-btn">
+              <span class="spinner" aria-hidden="true"></span>
+              <span id="search-label">Find jobs</span>
+            </button>
+          </div>
+          <p class="field-hint">Visa sponsorship keeps only jobs that say they will help with a work visa or work permit. “Must relocate” is not enough.</p>
+        </form>
+
+        <div class="toolbar">
+          <input id="filter-query" placeholder="Filter company or title" />
+          <select id="filter-work">
+            <option value="">Any workplace</option>
+            <option value="remote">Remote</option>
+            <option value="hybrid">Hybrid</option>
+            <option value="onsite">On-site</option>
+          </select>
+          <select id="sort">
+            <option value="success">Best interview odds</option>
+            <option value="salary">Salary</option>
+            <option value="recent">Newest</option>
+          </select>
+        </div>
+
+        <p id="status" class="status"></p>
+        <div id="search-progress" class="search-progress hidden" aria-live="polite">
+          <span class="spinner lg"></span>
+          <div>
+            <strong id="progress-title">Searching LinkedIn</strong>
+            <p id="progress-copy">This can take up to a minute while we pull listings and score them.</p>
+          </div>
+        </div>
+        <div id="jobs" class="jobs"></div>
+        <nav id="pager" class="pager" hidden>
+          <button type="button" id="page-prev" class="btn ghost">Previous</button>
+          <span id="page-info">Page 1</span>
+          <button type="button" id="page-next" class="btn ghost">Next</button>
+        </nav>
+      </section>
+    </main>
+  </div>
+
+  <aside id="drawer" class="drawer hidden" aria-hidden="true">
+    <div class="drawer-card">
+      <button class="icon-close" id="drawer-close" type="button">Close</button>
+      <p class="eyebrow" id="d-company"></p>
+      <h2 id="d-title"></h2>
+      <p class="muted" id="d-meta"></p>
+      <div class="meter-row">
+        <div class="meter" id="d-meter"></div>
+        <div>
+          <strong id="d-rate">—</strong>
+          <p>Interview success estimate</p>
+        </div>
+      </div>
+      <p id="d-summary"></p>
+      <div class="chips" id="d-flags"></div>
+      <p class="label">You already have</p>
+      <div class="chips" id="d-matched"></div>
+      <p class="label">Likely gaps</p>
+      <div class="chips warn" id="d-missing"></div>
+      <pre id="d-description"></pre>
+      <a id="d-link" class="btn primary" target="_blank" rel="noreferrer">Open on LinkedIn</a>
+    </div>
+  </aside>
+
+  <datalist id="country-list">
+    <option value="Germany"></option>
+    <option value="Netherlands"></option>
+    <option value="United Kingdom"></option>
+    <option value="United States"></option>
+    <option value="Canada"></option>
+    <option value="Sweden"></option>
+    <option value="Norway"></option>
+    <option value="Denmark"></option>
+    <option value="Finland"></option>
+    <option value="France"></option>
+    <option value="Spain"></option>
+    <option value="Italy"></option>
+    <option value="Portugal"></option>
+    <option value="Ireland"></option>
+    <option value="Switzerland"></option>
+    <option value="Austria"></option>
+    <option value="Belgium"></option>
+    <option value="Poland"></option>
+    <option value="Czech Republic"></option>
+    <option value="UAE"></option>
+    <option value="Turkey"></option>
+    <option value="Iran"></option>
+    <option value="Australia"></option>
+    <option value="Remote"></option>
+  </datalist>
+  <script src="/assets/app.js"></script>
+</body>
+</html>

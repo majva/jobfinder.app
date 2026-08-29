@@ -1,0 +1,35 @@
+# Application Configuration
+app:
+  name: "JobFinder"
+  version: "1.0.0"
+  description: "Personal dashboard that matches your CV to LinkedIn jobs"
+  environment: "production"
+
+# Server Configuration
+server:
+  host: "0.0.0.0"
+  port: 5000
+  debug: false
+
+# Database Configuration
+database:
+  url: "sqlite+aiosqlite:///./data/jobfinder.db"
+
+uploads:
+  dir: "./data/uploads"
+  max_mb: 10
+
+linkedin:
+  request_delay_seconds: 1.1
+  max_jobs_per_search: 50
+  posted_within_days: 30
+  timeout_seconds: 25
+
+# API Configuration
+api:
+  prefix: "/api/v1"
+  cors:
+    allow_origins: ["*"]
+    allow_credentials: true
+    allow_methods: ["*"]
+    allow_headers: ["*"]

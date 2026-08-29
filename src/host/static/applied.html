@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Applied · JobFinder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/app.css" />
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="mark">JF</span>
+        <div>
+          <h1>JobFinder</h1>
+          <p>Roles you already applied to.</p>
+        </div>
+      </div>
+      <nav class="site-nav" aria-label="Pages">
+        <a class="nav-link" href="/">Search</a>
+        <a class="nav-link is-active" href="/applied">Applied <span class="nav-count" id="nav-applied-count"></span></a>
+      </nav>
+      <div class="top-actions">
+        <a class="btn ghost" href="/docs" target="_blank" rel="noreferrer">API</a>
+      </div>
+    </header>
+
+    <section class="stats" id="stats">
+      <article><span id="stat-applied">0</span><small>Applied</small></article>
+      <article><span id="stat-success">0%</span><small>Avg interview odds</small></article>
+      <article><span id="stat-remote">0</span><small>Remote</small></article>
+      <article><span id="stat-sponsor">0</span><small>Visa roles</small></article>
+      <article><span id="stat-salary">0</span><small>With salary</small></article>
+    </section>
+
+    <main class="layout applied-layout">
+      <section class="panel jobs-panel">
+        <h2>Applied</h2>
+        <p class="muted page-lead">Every role you marked with I applied. They stay here after you refresh. Undo if you marked one by mistake.</p>
+        <div class="toolbar applied-toolbar">
+          <input id="filter-query" placeholder="Filter company or title" />
+          <select id="sort">
+            <option value="recent">Newest</option>
+            <option value="success">Best interview odds</option>
+            <option value="salary">Salary</option>
+          </select>
+        </div>
+        <p id="status" class="status"></p>
+        <div id="jobs" class="jobs"></div>
+        <nav id="pager" class="pager" hidden>
+          <button type="button" id="page-prev" class="btn ghost">Previous</button>
+          <span id="page-info">Page 1</span>
+          <button type="button" id="page-next" class="btn ghost">Next</button>
+        </nav>
+      </section>
+    </main>
+  </div>
+  <script src="/assets/applied.js"></script>
+</body>
+</html>
