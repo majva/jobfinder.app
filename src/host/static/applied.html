@@ -7,57 +7,76 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/assets/app.css" />
+  <link rel="stylesheet" href="/assets/app.css?v=ui-3" />
+  <link rel="stylesheet" href="/assets/applied.css?v=ui-3" />
 </head>
-<body>
-  <div class="shell">
-    <header class="topbar">
-      <div class="brand">
-        <span class="mark">JF</span>
-        <div>
-          <h1>JobFinder</h1>
-          <p>Roles you already applied to.</p>
-        </div>
+<body class="applied-page">
+  <header class="ap-top">
+    <div class="brand">
+      <span class="mark">JF</span>
+      <div>
+        <h1>JobFinder</h1>
+        <p>Application tracker</p>
       </div>
-      <nav class="site-nav" aria-label="Pages">
-        <a class="nav-link" href="/">Search</a>
-        <a class="nav-link is-active" href="/applied">Applied <span class="nav-count" id="nav-applied-count"></span></a>
-      </nav>
-      <div class="top-actions">
-        <a class="btn ghost" href="/docs" target="_blank" rel="noreferrer">API</a>
-      </div>
-    </header>
+    </div>
+    <nav class="site-nav" aria-label="Pages">
+      <a class="nav-link" href="/">Search</a>
+      <a class="nav-link is-active" href="/applied">Applied <span class="nav-count" id="nav-applied-count"></span></a>
+    </nav>
+  </header>
 
-    <section class="stats" id="stats">
-      <article><span id="stat-applied">0</span><small>Applied</small></article>
-      <article><span id="stat-success">0%</span><small>Avg interview odds</small></article>
-      <article><span id="stat-remote">0</span><small>Remote</small></article>
-      <article><span id="stat-sponsor">0</span><small>Visa roles</small></article>
-      <article><span id="stat-salary">0</span><small>With salary</small></article>
+  <main class="ap-main">
+    <section class="ap-toolbar">
+      <div class="ap-titleblock">
+        <h2>Applications</h2>
+        <p id="page-info">Loading…</p>
+      </div>
+      <div class="ap-metrics" id="stats">
+        <div><b id="stat-applied">0</b><span>Applied</span></div>
+        <div><b id="stat-pending">0</b><span>Waiting</span></div>
+        <div class="ok"><b id="stat-passed">0</b><span>Passed</span></div>
+        <div class="bad"><b id="stat-rejected">0</b><span>Rejected</span></div>
+        <div><b id="stat-success">0%</b><span>Avg odds</span></div>
+      </div>
+      <div class="ap-controls">
+        <input id="filter-query" type="search" placeholder="Search title or company" />
+        <div class="ap-tabs" id="outcome-tabs" role="tablist">
+          <button type="button" class="is-on" data-outcome="">All</button>
+          <button type="button" data-outcome="pending">Waiting</button>
+          <button type="button" data-outcome="passed">Passed</button>
+          <button type="button" data-outcome="rejected">Rejected</button>
+        </div>
+        <select id="sort">
+          <option value="recent">Newest</option>
+          <option value="success">Best odds</option>
+          <option value="salary">Salary</option>
+        </select>
+      </div>
     </section>
 
-    <main class="layout applied-layout">
-      <section class="panel jobs-panel">
-        <h2>Applied</h2>
-        <p class="muted page-lead">Every role you marked with I applied. They stay here after you refresh. Undo if you marked one by mistake.</p>
-        <div class="toolbar applied-toolbar">
-          <input id="filter-query" placeholder="Filter company or title" />
-          <select id="sort">
-            <option value="recent">Newest</option>
-            <option value="success">Best interview odds</option>
-            <option value="salary">Salary</option>
-          </select>
-        </div>
-        <p id="status" class="status"></p>
-        <div id="jobs" class="jobs"></div>
-        <nav id="pager" class="pager" hidden>
-          <button type="button" id="page-prev" class="btn ghost">Previous</button>
-          <span id="page-info">Page 1</span>
-          <button type="button" id="page-next" class="btn ghost">Next</button>
-        </nav>
-      </section>
-    </main>
-  </div>
-  <script src="/assets/applied.js"></script>
+    <section class="ap-table-shell">
+      <table class="ap-table">
+        <thead>
+          <tr>
+            <th class="col-role">Role</th>
+            <th class="col-loc">Location</th>
+            <th class="col-odds">Odds</th>
+            <th class="col-visa">Visa</th>
+            <th class="col-out">Outcome</th>
+            <th class="col-act"></th>
+          </tr>
+        </thead>
+        <tbody id="jobs-body"></tbody>
+      </table>
+      <p id="jobs-empty" class="ap-empty hidden"></p>
+    </section>
+
+    <nav id="pager" class="ap-pager" hidden>
+      <button type="button" id="page-prev" class="ap-pagebtn">Previous</button>
+      <div id="page-numbers" class="ap-pages"></div>
+      <button type="button" id="page-next" class="ap-pagebtn">Next</button>
+    </nav>
+  </main>
+  <script src="/assets/applied.js?v=ui-3"></script>
 </body>
 </html>

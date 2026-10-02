@@ -173,6 +173,7 @@ class JobService:
         min_success: Optional[float] = None,
         immigration_only: bool = False,
         applied: Optional[bool] = None,
+        outcome: Optional[str] = None,
         sort: str = "success",
         page: int = 1,
         page_size: int = 10,
@@ -186,6 +187,7 @@ class JobService:
             min_success=min_success,
             immigration_only=immigration_only,
             applied=applied,
+            outcome=outcome,
             sort=sort,
         )
         total = len(cards)
@@ -212,6 +214,7 @@ class JobService:
         min_success: Optional[float] = None,
         immigration_only: bool = False,
         applied: Optional[bool] = None,
+        outcome: Optional[str] = None,
         sort: str = "success",
     ) -> List[Dict[str, Any]]:
         candidate = await self._cv_service.get_latest_async()
@@ -222,6 +225,7 @@ class JobService:
             has_salary=has_salary,
             query=query,
             applied=applied,
+            outcome=outcome,
         )
         match_map = {}
         if candidate:
@@ -264,6 +268,25 @@ class JobService:
         if job is None:
             return None
         job.applied = applied
+        if not applied:
+            job.outcome = "pending"
+        job.modification_datetime = datetime.now(UTC)
+        job = await self._jobs.update_async(job)
+        candidate = await self._cv_service.get_latest_async()
+        match = None
+        if candidate:
+            match = await self._matches.get_by_job_and_candidate_async(job.id, candidate.id)
+        return self.to_card(job, match, candidate)
+
+    async def set_outcome_async(self, job_id: str, outcome: str) -> Optional[Dict[str, Any]]:
+        if outcome not in {"pending", "passed", "rejected"}:
+            raise ValueError("Outcome must be pending, passed, or rejected.")
+        job = await self._jobs.get_by_id_async(job_id)
+        if job is None:
+            return None
+        job.outcome = outcome
+        if outcome in {"passed", "rejected"}:
+            job.applied = True
         job.modification_datetime = datetime.now(UTC)
         job = await self._jobs.update_async(job)
         candidate = await self._cv_service.get_latest_async()
@@ -287,6 +310,12 @@ class JobService:
             "sponsorship": sum(1 for c in cards if c.get("sponsorship") == "yes"),
             "with_salary": sum(1 for c in cards if c.get("salary_text")),
             "applied": sum(1 for c in cards if c.get("applied")),
+            "pending": sum(
+                1 for c in cards
+                if c.get("applied") and (c.get("outcome") or "pending") == "pending"
+            ),
+            "passed": sum(1 for c in cards if c.get("outcome") == "passed"),
+            "rejected": sum(1 for c in cards if c.get("outcome") == "rejected"),
             "avg_success": round(sum(rates) / len(rates), 1) if rates else 0,
             "has_cv": candidate is not None,
         }
@@ -326,6 +355,7 @@ class JobService:
         job.modification_datetime = datetime.now(UTC)
         if existing is None:
             job.applied = False
+            job.outcome = "pending"
 
         if existing:
             job = await self._jobs.update_async(job)
@@ -381,6 +411,7 @@ class JobService:
             "posted_at": job.posted_at,
             "is_easy_apply": job.is_easy_apply,
             "applied": bool(job.applied),
+            "outcome": job.outcome or "pending",
             "source": job.source,
             "creation_datetime": job.creation_datetime.isoformat() if job.creation_datetime else None,
             "interview_success_rate": match.interview_success_rate if match else None,

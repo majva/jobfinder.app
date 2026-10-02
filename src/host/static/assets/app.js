@@ -160,14 +160,19 @@ function fillPlaceFromCv(location) {
   }
 }
 
+function setText(id, value) {
+  const el = $(id);
+  if (el) el.textContent = value;
+}
+
 function renderStats(stats) {
   const applied = stats.applied ?? 0;
-  $("stat-jobs").textContent = stats.jobs ?? 0;
-  $("stat-applied").textContent = applied;
-  $("stat-success").textContent = `${Math.round(stats.avg_success || 0)}%`;
-  $("stat-remote").textContent = stats.remote ?? 0;
-  $("stat-sponsor").textContent = stats.sponsorship ?? 0;
-  $("stat-salary").textContent = stats.with_salary ?? 0;
+  setText("stat-jobs", stats.jobs ?? 0);
+  setText("stat-applied", applied);
+  setText("stat-success", `${Math.round(stats.avg_success || 0)}%`);
+  setText("stat-remote", stats.remote ?? 0);
+  setText("stat-sponsor", stats.sponsorship ?? 0);
+  setText("stat-salary", stats.with_salary ?? 0);
   const badge = $("nav-applied-count");
   if (badge) {
     badge.textContent = applied ? String(applied) : "";
@@ -199,6 +204,8 @@ function renderJobs(page) {
             ${flag("visa", job.sponsorship === "yes", "visa")}
             ${flag("no visa", job.sponsorship === "no")}
             ${flag("relocation help", job.relocation === "offered")}
+            ${flag("passed", job.outcome === "passed", "passed")}
+            ${flag("rejected", job.outcome === "rejected", "rejected")}
             ${flag(job.salary_text, Boolean(job.salary_text))}
           </div>
         </div>

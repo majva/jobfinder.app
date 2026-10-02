@@ -28,6 +28,7 @@ class Job(Base):
     posted_at = Column(String(80), nullable=True)
     is_easy_apply = Column(Boolean, nullable=False, default=False)
     applied = Column(Boolean, nullable=False, default=False)
+    outcome = Column(String(20), nullable=False, default="pending")
     source = Column(String(40), nullable=False, default="linkedin")
 
     creation_datetime = Column(

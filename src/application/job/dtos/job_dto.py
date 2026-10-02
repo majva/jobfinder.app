@@ -1,7 +1,9 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Literal, Optional
 
 from pydantic import BaseModel, Field
+
+JobOutcome = Literal["pending", "passed", "rejected"]
 
 
 class SearchJobsDto(BaseModel):
@@ -32,6 +34,7 @@ class JobCardDto(BaseModel):
     posted_at: Optional[str] = None
     is_easy_apply: bool = False
     applied: bool = False
+    outcome: JobOutcome = "pending"
     source: str = "linkedin"
     creation_datetime: Optional[str] = None
     interview_success_rate: Optional[float] = None
@@ -59,6 +62,10 @@ class AppliedDto(BaseModel):
     applied: bool = True
 
 
+class OutcomeDto(BaseModel):
+    outcome: JobOutcome = "pending"
+
+
 class JobPageDto(BaseModel):
     items: List[JobCardDto]
     total: int
@@ -74,6 +81,9 @@ class JobStatsDto(BaseModel):
     sponsorship: int
     with_salary: int
     applied: int = 0
+    pending: int = 0
+    passed: int = 0
+    rejected: int = 0
     avg_success: float
     has_cv: bool
 

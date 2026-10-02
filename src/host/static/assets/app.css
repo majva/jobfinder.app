@@ -162,9 +162,6 @@ body {
 .stat-link { color: inherit; text-decoration: none; }
 .stat-link article { height: 100%; transition: border-color 0.15s ease; }
 .stat-link:hover article { border-color: var(--gold); }
-.applied-layout { grid-template-columns: 1fr; }
-.page-lead { margin: 0 0 16px; }
-.applied-toolbar { grid-template-columns: 1fr 180px; }
 
 .layout { display: grid; grid-template-columns: 320px 1fr; gap: 16px; }
 .panel { padding: 20px; }
@@ -290,6 +287,8 @@ input, select {
   background: #161411;
 }
 .job.applied-row { border-color: #3d5a3c; }
+.job.passed-row { border-color: var(--ok); }
+.job.rejected-row { border-color: var(--rose); }
 .job:hover { border-color: #4a4338; }
 .job h3 { margin: 0 0 4px; font-size: 1.02rem; }
 .job h3 a { color: var(--ink); text-decoration: none; }
@@ -303,7 +302,12 @@ input, select {
   min-width: 150px;
 }
 .job-actions .btn { justify-content: center; }
+.outcome-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .btn.applied-btn { background: var(--ok); color: #102010; border-color: transparent; }
+.btn.passed-btn { background: var(--ok); color: #102010; border-color: transparent; }
+.btn.rejected-btn { background: var(--rose); color: #1a0e0c; border-color: transparent; }
+.flag.passed { border-color: #3d5a3c; color: var(--ok); }
+.flag.rejected { border-color: #5a3a34; color: var(--rose); }
 
 .ring {
   width: 72px; height: 72px; border-radius: 50%;
@@ -343,7 +347,7 @@ input, select {
 }
 
 @media (max-width: 900px) {
-  .layout, .stats, .fields, .place-fields, .toolbar, .applied-toolbar, .job { grid-template-columns: 1fr; }
+  .layout, .stats, .fields, .place-fields, .toolbar, .job { grid-template-columns: 1fr; }
   .topbar { flex-direction: column; align-items: flex-start; }
   .site-nav { margin-left: 0; }
 }

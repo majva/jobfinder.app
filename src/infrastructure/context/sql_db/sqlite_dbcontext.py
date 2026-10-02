@@ -11,12 +11,16 @@ from src.infrastructure.utils.config_reader import ConfigReader
 Base = declarative_base()
 
 
-def _ensure_job_applied_column(connection) -> None:
+def _ensure_job_columns(connection) -> None:
     rows = connection.exec_driver_sql("PRAGMA table_info(job)").fetchall()
     names = {row[1] for row in rows}
     if "applied" not in names:
         connection.exec_driver_sql(
             "ALTER TABLE job ADD COLUMN applied BOOLEAN NOT NULL DEFAULT 0"
+        )
+    if "outcome" not in names:
+        connection.exec_driver_sql(
+            "ALTER TABLE job ADD COLUMN outcome VARCHAR(20) NOT NULL DEFAULT 'pending'"
         )
 
 
@@ -71,4 +75,4 @@ class SqliteDbContext:
 
         async with self._engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
-            await conn.run_sync(_ensure_job_applied_column)
+            await conn.run_sync(_ensure_job_columns)

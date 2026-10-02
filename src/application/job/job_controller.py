@@ -7,6 +7,7 @@ from src.application.job.dtos.job_dto import (
     JobCardDto,
     JobPageDto,
     JobStatsDto,
+    OutcomeDto,
     SearchJobsDto,
     SearchResultDto,
     SearchRunDto,
@@ -73,6 +74,7 @@ class JobController:
             min_success: Optional[float] = Query(default=None, ge=0, le=100),
             immigration_only: bool = False,
             applied: Optional[bool] = None,
+            outcome: Optional[str] = Query(default=None, pattern="^(pending|passed|rejected)$"),
             sort: str = Query(default="success"),
             page: int = Query(default=1, ge=1),
             page_size: int = Query(default=10, ge=5, le=50),
@@ -86,6 +88,7 @@ class JobController:
                 min_success=min_success,
                 immigration_only=immigration_only,
                 applied=applied,
+                outcome=outcome,
                 sort=sort,
                 page=page,
                 page_size=page_size,
@@ -124,6 +127,20 @@ class JobController:
         )
         async def mark_applied(job_id: str, payload: AppliedDto) -> JobCardDto:
             card = await self._job_service.set_applied_async(job_id, payload.applied)
+            if card is None:
+                raise HTTPException(status_code=404, detail="Job not found.")
+            return JobCardDto.model_validate(card)
+
+        @router.post(
+            "/{job_id}/outcome",
+            response_model=JobCardDto,
+            summary="Mark an application as passed or rejected",
+        )
+        async def mark_outcome(job_id: str, payload: OutcomeDto) -> JobCardDto:
+            try:
+                card = await self._job_service.set_outcome_async(job_id, payload.outcome)
+            except ValueError as exc:
+                raise HTTPException(status_code=400, detail=str(exc)) from exc
             if card is None:
                 raise HTTPException(status_code=404, detail="Job not found.")
             return JobCardDto.model_validate(card)

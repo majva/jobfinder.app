@@ -7,7 +7,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.types import Scope
 from uvicorn import run
+
+
+class NoCacheStaticFiles(StaticFiles):
+    async def get_response(self, path: str, scope: Scope):
+        response = await super().get_response(path, scope)
+        response.headers["Cache-Control"] = "no-store, must-revalidate"
+        response.headers["Pragma"] = "no-cache"
+        return response
 
 from src.infrastructure.di.inject import inject
 from src.infrastructure.utils.config_reader import ConfigReader
@@ -54,18 +63,18 @@ class WebService:
     def _register_dashboard(self):
         assets = self._static_dir / "assets"
         if assets.exists():
-            self.__app__.mount("/assets", StaticFiles(directory=assets), name="assets")
+            self.__app__.mount("/assets", NoCacheStaticFiles(directory=assets), name="assets")
 
         index_path = self._static_dir / "index.html"
         applied_path = self._static_dir / "applied.html"
 
         @self.__app__.get("/", include_in_schema=False)
         async def dashboard():
-            return FileResponse(index_path)
+            return FileResponse(index_path, headers={"Cache-Control": "no-store"})
 
         @self.__app__.get("/applied", include_in_schema=False)
         async def applied_page():
-            return FileResponse(applied_path)
+            return FileResponse(applied_path, headers={"Cache-Control": "no-store"})
 
     def _register_controllers(self):
         current_dir = Path(__file__).parent

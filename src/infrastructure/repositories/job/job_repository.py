@@ -30,6 +30,7 @@ class JobRepository(BaseRepository[Job]):
         has_salary: Optional[bool] = None,
         query: Optional[str] = None,
         applied: Optional[bool] = None,
+        outcome: Optional[str] = None,
     ) -> List[Job]:
         async with self._db_context.session() as session:
             stmt = select(Job)
@@ -44,6 +45,8 @@ class JobRepository(BaseRepository[Job]):
                 conditions.append(Job.applied.is_(True))
             elif applied is False:
                 conditions.append(Job.applied.is_(False))
+            if outcome:
+                conditions.append(Job.outcome == outcome)
             if has_salary is True:
                 conditions.append(Job.salary_text.is_not(None))
             if query:
